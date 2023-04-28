@@ -4,9 +4,6 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use App\Entity\UsersGroup;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -22,8 +19,8 @@ class User
     #[ORM\Column(length: 45)]
     private ?string $email = null;
 
-    #[ORM\OneToMany(targetEntity: UsersGroup::class, mappedBy:'users')]
-    private $userGroups;
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Group $name = null;
 
     public function getId(): ?int
     {
@@ -54,33 +51,15 @@ class User
         return $this;
     }
 
-    public function __construct()
+    public function getName(): ?Group
     {
-        $this->userGroups = new ArrayCollection();
+        return $this->name;
     }
 
-    public function addUserGroup(UsersGroup $userGroup): self
+    public function setName(?Group $name): self
     {
-        if (!$this->userGroups->contains($userGroup)) {
-            $this->userGroups[] = $userGroup;
-            $userGroup->addUser($this);
-        }
+        $this->name = $name;
 
         return $this;
-    }
-
-    public function removeUserGroup(UsersGroup $userGroup): self
-    {
-        if ($this->userGroups->contains($userGroup)) {
-            $this->userGroups->removeElement($userGroup);
-            $userGroup->removeUser($this);
-        }
-
-        return $this;
-    }
-
-    public function getUserGroups(): Collection
-    {
-        return $this->userGroups;
     }
 }

@@ -13,10 +13,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for userGroup in userGroups %}
+                {% for group in groups %}
                     <tr>
-                        <td>{{ userGroup.name }}</td>
-                        <td>{{ userGroup.users.count }}</td>
+                        <td>{{ group.name }}</td>
+                        {# <td>{{ group.users.count }}</td> #}
                     </tr>
                 {% else %}
                     <tr>

@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UsersGroupRepository;
-use Doctrine\ORM\Mapping as ORM;
+use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Entity\User;
+use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UsersGroupRepository::class)]
-class UsersGroup
+#[ORM\Entity(repositoryClass: GroupRepository::class)]
+#[ORM\Table(name: '`group`')]
+class Group
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,8 +19,13 @@ class UsersGroup
     #[ORM\Column(length: 45)]
     private ?string $name = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: "userGroups")]
-    private $users;
+    #[ORM\OneToMany(mappedBy: 'group', targetEntity: User::class)]
+    private Collection $users;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -39,33 +44,30 @@ class UsersGroup
         return $this;
     }
 
-    public function __construct()
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
     {
-        $this->users = new ArrayCollection();
+        return $this->users;
     }
 
     public function addUser(User $user): self
     {
         if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addUserGroup($this);
+            $this->users->add($user);
+            $user->setName($this);
         }
-
         return $this;
     }
 
     public function removeUser(User $user): self
     {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeUserGroup($this);
+        if ($this->users->removeElement($user)) {
+            if ($user->getName() === $this) {
+                $user->setName(null);
+            }
         }
-
         return $this;
-    }
-
-    public function getUsers(): Collection
-    {
-        return $this->users;
     }
 }
