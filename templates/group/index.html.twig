@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Groups List{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Groups List</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Group Name</th>
+                    <th>Users Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for userGroup in userGroups %}
+                    <tr>
+                        <td>{{ userGroup.name }}</td>
+                        <td>{{ userGroup.users.count }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">no groups found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_group_create') }}">Create new</a>
+    </div>
+{% endblock %}
